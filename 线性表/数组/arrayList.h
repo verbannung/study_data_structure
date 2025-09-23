@@ -2,227 +2,170 @@
 // Created by Ko-chieh Yin on 9/21/25.
 //
 
-
 #ifndef STUDY_ALGORITHMS_ARRAYLIST_H
 #define STUDY_ALGORITHMS_ARRAYLIST_H
-#include <algorithm>
-#include <iosfwd>
-#include <ostream>
-#include <system_error>
-#include <__system_error/errc.h>
 
+#include <algorithm>
+#include <ostream>
+#include <iterator>
+#include <system_error>
+#include <vector>
 #include "linearList.h"
 
-
-
-
-
 template<class T>
-class arrayList :public linearList<T> {
+class arrayList final : public linearList<T> {
+    friend std::ostream& operator<<(std::ostream& out, const arrayList<T>& x) {
+        x.output(out);
+        return out;
+    }
 
-    friend std::ostream& operator<<(std::ostream& out,const arrayList<T>& x);
-
-
-
-    //内部类 iterator
 private:
+    // 内部类 iterator
     class iterator {
     public:
-        //标记类型，标识迭代器的双向迭代能力
         typedef std::bidirectional_iterator_tag iterator_category;
-        //迭代器指向的元素类型
         typedef T value_type;
-        //迭代器之间的距离类型
         typedef ptrdiff_t difference_type;
-        //元素指针
         typedef T* pointer;
-        //引用类型
         typedef T& reference;
 
-        //构造函数
-        explicit iterator(T* thePosition=nullptr):position(thePosition) {};
+        explicit iterator(T* thePosition = nullptr) : position(thePosition) {}
 
-        T& operator*() const {
-            return *position;
-        }
-        //注意，本例子里是指针，但是不能保证所有的position都是指针
-        T* operator->() const {
-            return &*position;
-        }
-        //前加
-        iterator& operator++() {
-            ++position;
-            return *this;
-        }
-        //后加
-        iterator operator++(int) {
-            iterator old=*this;
-            ++ position;
+        T& operator*() const { return *position; }
+        T* operator->() const { return &*position; }
 
-            //RVO / NRVO（返回值优化）可能只会有一次拷贝构造
-            //如果不能RVO，那么会优先调用移动构造函数
-            return old;
-        }
+        iterator& operator++() { ++position; return *this; }
+        iterator operator++(int) { iterator old = *this; ++position; return old; }
 
-        iterator& operator--() {
-            --position;
-            return *this;
-        }
+        iterator& operator--() { --position; return *this; }
+        iterator operator--(int) { iterator old = *this; --position; return old; }
 
-        iterator operator--(int) {
-            iterator old=*this;
-            --position;
-            return old;
-        }
+        bool operator!=(const iterator& rhs) const { return position != rhs.position; }
+        bool operator==(const iterator& rhs) const { return position == rhs.position; }
 
-        bool operator!=(const iterator& rhs) const {
-            return position!=rhs.position;
-        }
+        iterator operator+(size_t n) const { return iterator(position + n); }
+        iterator operator-(size_t n) const { return iterator(position - n); }
+        difference_type operator-(const iterator& other) const { return position - other.position; }
 
-        bool operator==(const iterator& rhs) const {
-            return position==rhs.position;
-        }
-
-    protected:
+    private:
         T* position;
     };
 
 public:
-    explicit arrayList(int initialCapacity=10);
+    explicit arrayList(size_t initialCapacity = 10, float loadFactor = 0.5);
     arrayList(const arrayList<T>&);
     arrayList<T>& operator=(const arrayList<T>&);
-    ~arrayList() override {
-        delete[] element;
-    };
+    ~arrayList() override { delete[] element; }
 
-    //ADT方法
-    [[nodiscard]] bool empty() const override {
-        return listSize==0;
-    }
-    [[nodiscard]] int  size() const override {
-        return listSize;
-    }
-    std::ostream& operator<<(std::ostream& out) {
-        output(out);
-        return out;
-    }
-    T& get(int index) const override;
-    int indexOf(const T& element) const override;
-    void erase(int index) override;
-    void insert(int index, const T& element) override;
+    [[nodiscard]] bool empty() const override { return listSize == 0; }
+    [[nodiscard]] size_t size() const override { return listSize; }
+
+    const T& get(size_t index) const override;
+    std::optional<size_t> indexOf(const T& element) const override;
+    void erase(size_t index) override;
+    void insert(size_t index, const T& element) override;
     void output(std::ostream& out) const override;
 
-    [[nodiscard]] int capacity() const {
-        return arrayLength;
-    };
+    [[nodiscard]] int capacity() const { return arrayLength; }
 
-    iterator begin() {
-        return iterator(element);
-    }
+    iterator begin() { return iterator(element); }
+    iterator end() { return iterator(element + listSize); }
+    iterator begin() const { return iterator(element); }
+    iterator end() const { return iterator(element + listSize); }
 
-    iterator end() {
-        return iterator(element+listSize);
-    }
+private:
+    void checkIndex(size_t index) const;
 
-     iterator begin() const {
-        return iterator(element);
-    }
-
-    iterator end() const {
-        return iterator(element);
-    }
-
-
-
-
-
-protected:
-    void checkIndex(int index) const;
     T* element;
-    int listSize;
-    int arrayLength;
+    //实际容量
+    size_t listSize;
+    //数组长度
+    size_t arrayLength;
+    float loadFactor;
 };
 
+// 构造函数
 template<class T>
-arrayList<T>::arrayList(int initialCapacity) {
-    if (initialCapacity<1) {
-        throw std::system_error(std::make_error_code(std::errc::invalid_argument));
-    }
-    arrayLength=initialCapacity;
+arrayList<T>::arrayList(size_t initialCapacity, float theLoadFactor) {
+    if (initialCapacity < 1) throw std::system_error(std::make_error_code(std::errc::invalid_argument));
+    arrayLength = initialCapacity;
     element = new T[arrayLength];
-    listSize=0;
+    listSize = 0;
+    loadFactor = theLoadFactor;
 }
 
+// 拷贝构造
 template<class T>
 arrayList<T>::arrayList(const arrayList<T>& list) {
-    arrayLength=list.arrayLength;
-    listSize=list.listSize;
+    arrayLength = list.arrayLength;
+    listSize = list.listSize;
     element = new T[arrayLength];
-    std::copy(list.element,list.element+listSize,element);
+    loadFactor = list.loadFactor;
+    std::copy(list.element, list.element + listSize, element);
+}
+
+// operator=
+template<class T>
+arrayList<T>& arrayList<T>::operator=(const arrayList<T>& rhs) {
+    if (this != &rhs) {
+        delete[] element;
+        arrayLength = rhs.arrayLength;
+        listSize = rhs.listSize;
+        element = new T[arrayLength];
+        std::copy(rhs.element, rhs.element + listSize, element);
+        loadFactor = rhs.loadFactor;
+    }
+    return *this;
 }
 
 template<class T>
-void arrayList<T>::checkIndex(int index) const {
-    if (index<0 || index>=listSize) {
- throw std::system_error(std::make_error_code(std::errc::invalid_argument));    }
+void arrayList<T>::checkIndex(size_t index) const {
+    if (index >= listSize) throw std::system_error(std::make_error_code(std::errc::invalid_argument));
 }
 
 template<class T>
-T& arrayList<T>::get(int index) const {
+const T& arrayList<T>::get(size_t index) const {
     checkIndex(index);
     return element[index];
 }
 
 template<class T>
-int arrayList<T>::indexOf(const T& e) const {
-    for (int i=0;i<listSize;i++) {
-        if (e==element[i]) {
-            return i;
-        }
+std::optional<size_t> arrayList<T>::indexOf(const T& e) const {
+    for (size_t i = 0; i < listSize; i++) {
+        if (e == element[i]) return i;
     }
-    return -1;
+    return {};
 }
 
 template<class T>
-void arrayList<T>::erase(int index) {
+void arrayList<T>::erase(size_t index) {
     checkIndex(index);
-    std::copy(element+index+1,element+listSize,element+index);
-    element[--listSize].~T();
+    std::copy(element + index + 1, element + listSize, element + index);
+    --listSize;
 }
 
 template<class T>
-void arrayList<T>::insert(int index, const T& e) {
-    if (index<0 || index >listSize ) {
-        throw std::system_error(std::make_error_code(std::errc::invalid_argument));
+void arrayList<T>::insert(size_t index, const T& e) {
+    if (index > listSize) throw std::out_of_range("插入位置非法");
+
+    if (listSize >= arrayLength) {
+        size_t newLength = std::max(static_cast<size_t>(arrayLength * (1 + loadFactor)), size_t(1));
+        T* newElement = new T[newLength];
+        std::copy(element, element + listSize, newElement);
+        delete[] element;
+        element = newElement;
+        arrayLength = newLength;
     }
 
-
-    // 两倍率扩容因子
-    if (listSize==arrayLength) {
-        changeLength1D(element,arrayLength,2*arrayLength);
-        arrayLength*=2;
-    }
-
-    std::copy_backward(element+index,element+listSize,element+listSize+1);
-    element[index]=e;
-
-    listSize++;
+    std::copy_backward(element + index, element + listSize, element + listSize + 1);
+    element[index] = e;
+    ++listSize;
 }
 
 template<class T>
 void arrayList<T>::output(std::ostream& out) const {
-    copy(element,element+listSize, std::ostream_iterator<T>(out," "));
-    for (int i=0;i<listSize;i++) {
-        out<<element[i]<<' ';
-    }
-    out<<std::endl;
+    std::copy(element, element + listSize, std::ostream_iterator<T>(out, " "));
+    out << std::endl;
 }
-
-
-
-
-
-
-
 
 #endif //STUDY_ALGORITHMS_ARRAYLIST_H

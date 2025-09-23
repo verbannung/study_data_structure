@@ -4,17 +4,21 @@
 
 #include "util.h"
 #include "arrayList.h"
-
+#include "multipleTable.h"
+#include "vectorList.h"
 
 void testArrayList() ;
 void testIterator();
 void exam();
+void testVectorList() ;
+void testMultipleTable();
 int main(){
 
     // testArrayList();
     // testIterator();
-    exam();
-
+    // exam();
+    // testVectorList();
+    testMultipleTable();
 
     return 0;
 }
@@ -56,6 +60,41 @@ void exam() {
         delete[] x[i];
     }
     delete[] x;
+
+
+}
+
+void testVectorList() {
+    vectorList<int> x = vectorList<int>();
+   for (int i=0;i<11;i++) {
+       x.insert(i,i);
+   }
+
+    p(x.capacity());
+}
+
+void testMultipleTable() {
+
+
+    std::cout << "==== 测试 multipleTable ====" << std::endl;
+    multipleTable<int> mt(10, 0.5, 3);
+
+    mt.insert(0, 0, 1);
+    mt.insert(0, 1, 2);
+    mt.insert(1, 0, 100);
+    mt.insert(2, 0, 200);
+
+    std::cout << "表0: ";
+    for (size_t i = 0; i < mt.size(0); i++) std::cout << mt.get(0, i) << " ";
+    std::cout << std::endl;
+
+    std::cout << "表1: ";
+    for (size_t i = 0; i < mt.size(1); i++) std::cout << mt.get(1, i) << " ";
+    std::cout << std::endl;
+
+    std::cout << "表2: ";
+    for (size_t i = 0; i < mt.size(2); i++) std::cout << mt.get(2, i) << " ";
+    std::cout << std::endl;
 
 
 }
