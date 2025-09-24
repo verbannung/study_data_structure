@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 # 添加子目录
 add_subdirectory(线性表/数组)
+add_subdirectory(线性表/链表)
 
 # 未来可以添加更多子包
 # add_subdirectory(栈和队列)
