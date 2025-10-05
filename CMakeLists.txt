@@ -1,15 +1,20 @@
 cmake_minimum_required(VERSION 3.16)
-project(StudyAlgorithms)
+project(StudyDataStruct VERSION 1.0.0)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# 添加子目录
-add_subdirectory(线性表/数组)
-add_subdirectory(线性表/链表)
 
-# 未来可以添加更多子包
-# add_subdirectory(栈和队列)
-# add_subdirectory(树)
-# add_subdirectory(图)
-# add_subdirectory(排序)
-# add_subdirectory(搜索)
+#include_directories(
+#        ${CMAKE_CURRENT_SOURCE_DIR}/include
+#)
+
+# 添加子目录模块
+add_subdirectory(线性表)
+add_subdirectory(树)
+
+
+add_subdirectory(test/googletest)
+add_subdirectory(test)
+enable_testing()
+
