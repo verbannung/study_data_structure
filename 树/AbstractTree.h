@@ -28,16 +28,16 @@ class AbstractTree {
 public:
     virtual ~AbstractTree() = default;
 
-    // ---------- 基本性质 ----------
+
     [[nodiscard]] virtual bool empty() const = 0;
     [[nodiscard]] virtual std::size_t size() const = 0;
     [[nodiscard]] virtual std::size_t depth() const = 0;
 
-    // ---------- 结构访问 ----------
+
     [[nodiscard]] virtual const NodeType* getRoot() const = 0;
     [[nodiscard]] virtual NodeType* getRoot() = 0;
 
-    // ---------- 遍历 ----------
+
     virtual void preOrder(const std::function<void(const T&)>& visit) const = 0;
     virtual void postOrder(const std::function<void(const T&)>& visit) const = 0;
     virtual void levelOrder(const std::function<void(const T&)>& visit) const = 0;

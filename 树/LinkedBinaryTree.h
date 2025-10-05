@@ -8,6 +8,7 @@
 #include <queue>
 
 #include "BinaryTree.h"
+#include "BinaryTreeUtil.h"
 
 template <class T>
 class LinkedBinaryTree : public BinaryTree<T> {
@@ -28,7 +29,7 @@ public:
     [[nodiscard]] const BinaryTreeNode<T>* getRoot() const override { return root.get(); }
     [[nodiscard]] BinaryTreeNode<T>* getRoot() override { return root.get(); }
 
-    // ---------- 遍历 ----------
+
     void preOrder(const std::function<void(const T&)>& visit) const override {
         preOrderImpl(root.get(), visit);
     }
@@ -64,15 +65,15 @@ private:
     std::size_t treeDepth = 0;
     std::size_t treeSize = 0;
 
-    static std::size_t calcDepth(const BinaryTreeNode<T>* node) {
-        if (!node) return 0;
-        return 1 + std::max(calcDepth(node->getLeft()), calcDepth(node->getRight()));
-    }
+    // static std::size_t calcDepth(const BinaryTreeNode<T>* node) {
+    //     if (!node) return 0;
+    //     return 1 + std::max(calcDepth(node->getLeft()), calcDepth(node->getRight()));
+    // }
 
-    static std::size_t calcSize(const BinaryTreeNode<T>* node) {
-        if (!node) return 0;
-        return 1 + calcSize(node->getLeft()) + calcSize(node->getRight());
-    }
+    // static std::size_t calcSize(const BinaryTreeNode<T>* node) {
+    //     if (!node) return 0;
+    //     return 1 + calcSize(node->getLeft()) + calcSize(node->getRight());
+    // }
 
 
     void preOrderImpl(const BinaryTreeNode<T>* node, const std::function<void(const T&)>& visit) const {
@@ -100,6 +101,8 @@ private:
         treeDepth = calcDepth(root.get());
         treeSize = calcSize(root.get());
     }
+
+
 };
 
 
