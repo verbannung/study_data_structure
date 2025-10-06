@@ -10,7 +10,7 @@
 
 template<class T>
 //广度优先算法
-inline bool isCompleteTree(const BinaryTreeNode<T> *root) {
+ bool isCompleteTree(const BinaryTreeNode<T> *root) {
     if (!root) return true;
     std::queue<const BinaryTreeNode<T> *> q;
     q.push(root);
@@ -33,13 +33,21 @@ inline bool isCompleteTree(const BinaryTreeNode<T> *root) {
 }
 
 template<class T>
-inline std::size_t calcDepth(const BinaryTreeNode<T>* node) {
+ std::size_t calcDepth(const BinaryTreeNode<T>* node) {
     if (!node) return 0;
     return 1 + std::max(calcDepth(node->getLeft()), calcDepth(node->getRight()));
+
+}
+
+
+inline std::size_t calcDepth(std::size_t nodeSize) {
+    return nodeSize == 0
+        ? 0
+        : static_cast<std::size_t>(std::floor(std::log2(static_cast<double>(nodeSize))) + 1.0);
 }
 
 template<class T>
-inline  std::size_t calcSize(const BinaryTreeNode<T>* node) {
+  std::size_t calcSize(const BinaryTreeNode<T>* node) {
     if (!node) return 0;
     return 1 + calcSize(node->getLeft()) + calcSize(node->getRight());
 }

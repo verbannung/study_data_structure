@@ -13,7 +13,7 @@ template <class T>
 class BinaryTreeNode : public AbstractTreeNode<T> {
 private:
     T element;
-    BinaryTreeNode<T>* parent = nullptr;
+    BinaryTreeNode<T>* parent = nullptr; //不拥有所有权
     std::unique_ptr<BinaryTreeNode<T>> left;
     std::unique_ptr<BinaryTreeNode<T>> right;
 
@@ -25,13 +25,16 @@ public:
                    std::unique_ptr<BinaryTreeNode<T>> rightNode)
         : element(value),
           left(std::move(leftNode)),
-          right(std::move(rightNode)) {}
+          right(std::move(rightNode)) {
+        if (left) left->parent = this;
+        if (right) right->parent = this;
+    }
 
-    // 数据访问
+
     const T& getElement() const override { return element; }
     T& getElement() override { return element; }
 
-    // 左右访问
+
     [[nodiscard]] BinaryTreeNode<T>* getLeft() const { return left.get(); }
     [[nodiscard]] BinaryTreeNode<T>* getRight() const { return right.get(); }
 
@@ -64,13 +67,20 @@ public:
 };
 
 template <class T>
-class BinaryTree : public AbstractTree<T, BinaryTreeNode<T>> {
+class BinaryTree : public AbstractTree {
 public:
     ~BinaryTree() override = default;
 
     virtual void inOrder(const std::function<void(const T&)>& visit) const = 0;
 
-    [[nodiscard]] const BinaryTreeNode<T>* getRoot() const override = 0;
+
+    [[nodiscard]] virtual const BinaryTreeNode<T>* getRoot() const = 0;
+    [[nodiscard]] virtual BinaryTreeNode<T>* getRoot() = 0;
+
+
+    virtual void preOrder(const std::function<void(const T&)>& visit) const = 0;
+    virtual void postOrder(const std::function<void(const T&)>& visit) const = 0;
+    virtual void levelOrder(const std::function<void(const T&)>& visit) const = 0;
 
 };
 

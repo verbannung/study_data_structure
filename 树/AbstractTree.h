@@ -23,7 +23,7 @@ public:
 };
 
 
-template <class T, class NodeType>
+// template <class T, class NodeType>
 class AbstractTree {
 public:
     virtual ~AbstractTree() = default;
@@ -34,13 +34,7 @@ public:
     [[nodiscard]] virtual std::size_t depth() const = 0;
 
 
-    [[nodiscard]] virtual const NodeType* getRoot() const = 0;
-    [[nodiscard]] virtual NodeType* getRoot() = 0;
 
-
-    virtual void preOrder(const std::function<void(const T&)>& visit) const = 0;
-    virtual void postOrder(const std::function<void(const T&)>& visit) const = 0;
-    virtual void levelOrder(const std::function<void(const T&)>& visit) const = 0;
 };
 
 #endif //STUDYDATASTRUCT_ABSTRACTTREE_H

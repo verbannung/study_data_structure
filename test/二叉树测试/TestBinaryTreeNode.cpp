@@ -22,30 +22,29 @@ protected:
     }
 };
 
-// ---------- 节点基本值 ----------
-TEST_F(TestBinaryTreeNode, ElementValues) {
+
+TEST_F(TestBinaryTreeNode, 节点基本值) {
     EXPECT_EQ(root->getElement(), 1);
     EXPECT_EQ(root->getLeft()->getElement(), 2);
     EXPECT_EQ(root->getRight()->getElement(), 3);
 }
 
-// ---------- 左右孩子存在性 ----------
-TEST_F(TestBinaryTreeNode, ChildrenExistence) {
+
+TEST_F(TestBinaryTreeNode, 左右孩子存在性) {
     EXPECT_TRUE(root->hasLeft());
     EXPECT_TRUE(root->hasRight());
     EXPECT_FALSE(root->getLeft()->hasChildren());
     EXPECT_FALSE(root->getRight()->hasChildren());
 }
 
-// ---------- 父子关系正确 ----------
-TEST_F(TestBinaryTreeNode, ParentLinks) {
+
+TEST_F(TestBinaryTreeNode, 父子关系正确) {
     EXPECT_EQ(root->getLeft()->getParent(), root.get());
     EXPECT_EQ(root->getRight()->getParent(), root.get());
     EXPECT_EQ(root->getParent(), nullptr);
 }
 
-// ---------- getChildren() 正确 ----------
-TEST_F(TestBinaryTreeNode, GetChildrenVector) {
+TEST_F(TestBinaryTreeNode, getChildren正确) {
     auto children = root->getChildren();
     ASSERT_EQ(children.size(), 2);
     EXPECT_EQ(children[0]->getElement(), 2);

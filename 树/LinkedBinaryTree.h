@@ -98,8 +98,9 @@ private:
     }
 
     void updateMeta() {
-        treeDepth = calcDepth(root.get());
+        // treeDepth = calcDepth(root.get());
         treeSize = calcSize(root.get());
+        treeDepth=calcDepth(treeSize);
     }
 
 
