@@ -9,8 +9,8 @@
 
 //基于堆的 Top-K 选择算法（Heap-based Top-K Selection Algorithm）
 //获取堆中优先级第i的元素(从1开始)
-template<class T>
-T getValueWithOrderPriorityByMaxBinaryHeap(const MaxBinaryHeap<T>& heap,std::size_t priority) {
+template<class T,class Compare>
+T getValueWithOrderPriority(const BinaryHeap<T,Compare>& heap,std::size_t priority) {
     if (priority==0||priority>heap.size())
         throw std::runtime_error("优先级越界");
     MinBinaryHeap<T> aux;
@@ -25,4 +25,7 @@ T getValueWithOrderPriorityByMaxBinaryHeap(const MaxBinaryHeap<T>& heap,std::siz
     }
     return aux.top();
 }
+
+
+
 #endif //STUDYDATASTRUCT_BINARYHEAPUTIL_H

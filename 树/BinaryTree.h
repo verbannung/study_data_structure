@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "AbstractTree.h"
+#include "TreeIterator.h"
+
 
 template <class T>
 class BinaryTreeNode : public AbstractTreeNode<T> {
@@ -64,10 +66,24 @@ public:
     [[nodiscard]] bool hasChildren() const override {
         return left || right;
     }
+
+    std::unique_ptr<BinaryTreeNode<T>> clone() const {
+        auto newNode = std::make_unique<BinaryTreeNode<T>>(element);
+        if (left) {
+            newNode->left=left->clone();
+            newNode->left->parent=newNode.get();
+        }
+        if (right) {
+            newNode->right=right->clone();
+            newNode->right->parent=newNode.get();
+        }
+
+        return newNode;
+    }
 };
 
 template <class T>
-class BinaryTree : public AbstractTree {
+class BinaryTree : public AbstractTree{
 public:
     ~BinaryTree() override = default;
 
@@ -78,9 +94,16 @@ public:
     [[nodiscard]] virtual BinaryTreeNode<T>* getRoot() = 0;
 
 
+
     virtual void preOrder(const std::function<void(const T&)>& visit) const = 0;
     virtual void postOrder(const std::function<void(const T&)>& visit) const = 0;
     virtual void levelOrder(const std::function<void(const T&)>& visit) const = 0;
+    virtual std::unique_ptr<BinaryTree<T>> clone() const=0;
+
+    virtual std::unique_ptr<TreeIterator<T>> iterator( TraversalOrder order) const = 0;
+
+
+
 
 };
 

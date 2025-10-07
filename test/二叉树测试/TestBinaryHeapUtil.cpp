@@ -28,9 +28,9 @@ protected:
 };
 
 TEST_F(TestBinaryHeapUtil,测试最大堆的获取第n个元素) {
-    EXPECT_EQ(getValueWithOrderPriorityByMaxBinaryHeap(maxHeap,3),3);
-    EXPECT_EQ(getValueWithOrderPriorityByMaxBinaryHeap(maxHeap,2),5);
-    EXPECT_EQ(getValueWithOrderPriorityByMaxBinaryHeap(maxHeap,1),10);
-    EXPECT_ANY_THROW(getValueWithOrderPriorityByMaxBinaryHeap(maxHeap,0));
-    EXPECT_ANY_THROW(getValueWithOrderPriorityByMaxBinaryHeap(maxHeap,6));
+    EXPECT_EQ(getValueWithOrderPriority(maxHeap,3),3);
+    EXPECT_EQ(getValueWithOrderPriority(maxHeap,2),5);
+    EXPECT_EQ(getValueWithOrderPriority(maxHeap,1),10);
+    EXPECT_ANY_THROW(getValueWithOrderPriority(maxHeap,0));
+    EXPECT_ANY_THROW(getValueWithOrderPriority(maxHeap,6));
 }

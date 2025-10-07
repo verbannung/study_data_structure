@@ -17,7 +17,7 @@ public:
     virtual const T& top() const=0;  //获取堆顶元素
     virtual void clear()  = 0;  //清空堆
 
-    virtual bool compare(const T&a, const T&b) const = 0;  //比较策略
+    // virtual bool compare(const T&a, const T&b) const =0;
 };
 
 

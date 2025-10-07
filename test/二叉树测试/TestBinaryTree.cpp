@@ -38,7 +38,7 @@ protected:
 
 
 
-// ------------------ 前序遍历 ------------------
+
 TEST_F(TestBinaryTree, preOrder) {
     std::ostringstream buffer;
     auto visit = [&buffer](const int& value) {
@@ -50,7 +50,7 @@ TEST_F(TestBinaryTree, preOrder) {
     EXPECT_EQ(buffer.str(), "1 2 4 5 3 6 ");
 }
 
-// ------------------ 中序遍历 ------------------
+
 TEST_F(TestBinaryTree, inOrder) {
     std::ostringstream buffer;
     tree->inOrder([&buffer](const int& v) {
@@ -59,7 +59,7 @@ TEST_F(TestBinaryTree, inOrder) {
     EXPECT_EQ(buffer.str(), "4 2 5 1 3 6 ");
 }
 
-// ------------------ 后序遍历 ------------------
+
 TEST_F(TestBinaryTree, postOrder) {
     std::ostringstream buffer;
     tree->postOrder([&buffer](const int& v) {
@@ -68,7 +68,7 @@ TEST_F(TestBinaryTree, postOrder) {
     EXPECT_EQ(buffer.str(), "4 5 2 6 3 1 ");
 }
 
-// ------------------ 层序遍历 ------------------
+
 TEST_F(TestBinaryTree, levelOrder) {
     std::ostringstream buffer;
     tree->levelOrder([&buffer](const int& v) {
@@ -77,12 +77,23 @@ TEST_F(TestBinaryTree, levelOrder) {
     EXPECT_EQ(buffer.str(), "1 2 3 4 5 6 ");
 }
 
-// ------------------ 深度与节点数 ------------------
+
 TEST_F(TestBinaryTree, testTreeDepth) {
     EXPECT_EQ(tree->depth(), 3);
 }
 
 TEST_F(TestBinaryTree, testTreeSize) {
     EXPECT_EQ(tree->size(), 6);
+}
+
+TEST_F(TestBinaryTree, testClone) {
+    auto clone = tree->clone();
+    EXPECT_EQ(tree->size(), 6);
+    EXPECT_EQ(tree->depth(), 3);
+
+    auto linked_binary_tree = std::make_unique<LinkedBinaryTree<int>>();
+    auto clone_linked_binary_tree = linked_binary_tree->clone();
+    EXPECT_EQ(clone_linked_binary_tree->size(), 0);
+    EXPECT_EQ(clone_linked_binary_tree->depth(), 0);
 }
 

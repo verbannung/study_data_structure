@@ -13,11 +13,11 @@
 template <class T>
 class LinkedBinaryTree : public BinaryTree<T> {
 
-
+// using BinaryTree<T>::root;
 
 public:
-    LinkedBinaryTree() = default;
-    explicit LinkedBinaryTree(std::unique_ptr<BinaryTreeNode<T>>&& _root)
+    // LinkedBinaryTree() = default;
+    explicit LinkedBinaryTree(std::unique_ptr<BinaryTreeNode<T>> _root=nullptr)
         : root(std::move(_root)) {
         updateMeta();
     }
@@ -60,6 +60,14 @@ public:
         updateMeta();
     }
 
+    std::unique_ptr<BinaryTree<T>> clone() const override {
+        return std::make_unique<LinkedBinaryTree<T>>(root?root->clone():nullptr);
+    }
+
+    std::unique_ptr<TreeIterator<T>> iterator( TraversalOrder order=TraversalOrder::InOrder) const override {
+        return std::make_unique<Iterator>(this, order);
+    }
+
 private:
     std::unique_ptr<BinaryTreeNode<T>> root;
     std::size_t treeDepth = 0;
@@ -99,9 +107,49 @@ private:
 
     void updateMeta() {
         // treeDepth = calcDepth(root.get());
+        if (!root) {
+            treeSize = 0;
+            treeDepth = 0;
+            return;
+        }
         treeSize = calcSize(root.get());
         treeDepth=calcDepth(treeSize);
     }
+
+    class Iterator : public TreeIterator<T> {
+        const LinkedBinaryTree<T>* tree;
+        std::vector<const T*> elements;
+        typename std::vector<const T*>::const_iterator it;
+
+    public:
+        Iterator(const LinkedBinaryTree<T>* t, TraversalOrder order)
+            : tree(t)
+        {
+            if (order == TraversalOrder::PreOrder)
+                tree->preOrder([&](const T& v){ elements.push_back(&v); });
+            else if (order == TraversalOrder::PostOrder)
+                tree->postOrder([&](const T& v){ elements.push_back(&v); });
+            else if (order == TraversalOrder::LevelOrder)
+                tree->levelOrder([&](const T& v){ elements.push_back(&v); });
+            else if (order == TraversalOrder::InOrder)
+                tree->inOrder([&](const T& v){ elements.push_back(&v); });
+            else
+                throw std::invalid_argument("未知排序方式");
+
+            it = elements.begin();
+        }
+
+        void traverse(const std::function<void(const T&)>& visit) override {
+            for (auto* e : elements) visit(*e);
+        }
+
+        [[nodiscard]] bool hasNext() const override { return it != elements.end(); }
+
+        const T& next() override {
+            if (it == elements.end()) throw std::out_of_range("Iterator end");
+            return **it++;
+        }
+    };
 
 
 };

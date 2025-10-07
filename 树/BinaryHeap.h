@@ -10,18 +10,22 @@
 //数组实现
 //为什么需要用数组而不是链表? 因为完全二叉树可以通过下标确定父节点等信息,而链表查询速度会退化到O(n)
 
-template<class T>
+template<class T,class Compare=std::less<T>>
 class BinaryHeap:public Heap<T> {
 
 
 protected:
     std::vector<T> data;
 
+    Compare compare;
+
     void heapifyUp(std::size_t index);
 
     void heapifyDown(std::size_t index);
 public:
-    BinaryHeap()=default;
+    explicit BinaryHeap(Compare compare_=Compare{});
+
+    explicit BinaryHeap(Compare compare_=Compare{},auto begin,auto end);
 
     [[nodiscard]] bool empty() const override;
 
@@ -37,7 +41,9 @@ public:
 
     void clear()  override;
 
-     bool compare(const T &a, const T &b) const override =0;
+     // bool compare(const T &a, const T &b) const override {
+     //     return comp(a,b);
+     // };
 
     auto begin() const;
 
@@ -45,8 +51,8 @@ public:
 };
 
 //上浮
-template<class T>
-void BinaryHeap<T>::heapifyUp(std::size_t index) {
+template<class T,class Compare>
+void BinaryHeap<T,Compare>::heapifyUp(std::size_t index) {
     while (index>0) {
         std::size_t parentIndex = (index-1)/2;
         if (this->compare(data[parentIndex],data[index]))
@@ -56,8 +62,8 @@ void BinaryHeap<T>::heapifyUp(std::size_t index) {
     }
 }
 
-template<class T>
-void BinaryHeap<T>::heapifyDown(std::size_t index) {
+template<class T,class Compare>
+void BinaryHeap<T,Compare>::heapifyDown(std::size_t index) {
     auto size = data.size();
     while (true) {
         std::size_t leftChildIndex = 2*index+1;
@@ -77,29 +83,34 @@ void BinaryHeap<T>::heapifyDown(std::size_t index) {
     }
 }
 
-template<class T>
-bool BinaryHeap<T>::empty() const {
+template<class T, class Compare>
+BinaryHeap<T, Compare>::BinaryHeap(Compare compare_) :compare(compare_){}
+
+
+
+template<class T,class Compare>
+bool BinaryHeap<T,Compare>::empty() const {
     return data.empty();
 }
 
-template<class T>
-std::size_t BinaryHeap<T>::size() const {
+template<class T,class Compare>
+std::size_t BinaryHeap<T,Compare>::size() const {
     return data.size();
 }
 
-template<class T>
-std::size_t BinaryHeap<T>::depth() const {
+template<class T,class Compare>
+std::size_t BinaryHeap<T,Compare>::depth() const {
     return calcDepth(data.size());
 }
 
-template<class T>
-void BinaryHeap<T>::push(const T &element)  {
+template<class T,class Compare>
+void BinaryHeap<T,Compare>::push(const T &element)  {
     data.push_back(element);
     heapifyUp(data.size()-1);
 }
 
-template<class T>
-void BinaryHeap<T>::pop()  {
+template<class T,class Compare>
+void BinaryHeap<T,Compare>::pop()  {
     if (empty())
         throw std::runtime_error("优先级队列为空");
     std::swap(data[0],data.back());
@@ -107,54 +118,58 @@ void BinaryHeap<T>::pop()  {
     heapifyDown(0);
 }
 
-template<class T>
-const T & BinaryHeap<T>::top() const {
+template<class T,class Compare>
+const T & BinaryHeap<T,Compare>::top() const {
     if (empty())
         throw std::runtime_error("优先级队列为空");
     return data[0];
 }
 
-template<class T>
-void BinaryHeap<T>::clear() {
+template<class T,class Compare>
+void BinaryHeap<T,Compare>::clear() {
     data.clear();
 }
 
-template<class T>
-auto BinaryHeap<T>::begin() const {
+template<class T,class Compare>
+auto BinaryHeap<T,Compare>::begin() const {
     return data.begin();
 }
 
-template<class T>
-auto BinaryHeap<T>::end() const{
+template<class T,class Compare>
+auto BinaryHeap<T,Compare>::end() const{
     return data.end();
 }
 
 
-template<class T>
-class MaxBinaryHeap:public BinaryHeap<T> {
-public:
-    bool compare(const T &a, const T &b) const override;
-};
-
-//最大堆
-template<class T>
-bool MaxBinaryHeap<T>::compare(const T &a, const T &b) const {
-    return a>b;
-}
-
-//最小堆
-template<class T>
-class MinBinaryHeap:public BinaryHeap<T> {
-
-    friend T& getValueWithOrderPriorityByMaxBinaryHeap(const MaxBinaryHeap<T>& heap,std::size_t priority);
-
-public:
-    bool compare(const T &a, const T &b) const override;
-};
+// template<class T>
+// class MaxBinaryHeap:public BinaryHeap<T> {
+// public:
+//     bool compare(const T &a, const T &b) const override;
+// };
+//
+// //最大堆
+// template<class T>
+// bool MaxBinaryHeap<T>::compare(const T &a, const T &b) const {
+//     return a>b;
+// }
 
 template<class T>
-bool MinBinaryHeap<T>::compare(const T &a, const T &b) const {
-    return a<b;
-}
+using MinBinaryHeap=BinaryHeap<T,std::less<T>>;
+
+template<class T>
+using MaxBinaryHeap=BinaryHeap<T,std::greater<T>>;
+
+// //最小堆
+// template<class T>
+// class MinBinaryHeap:public BinaryHeap<T> {
+//
+// public:
+//     bool compare(const T &a, const T &b) const override;
+// };
+//
+// template<class T>
+// bool MinBinaryHeap<T>::compare(const T &a, const T &b) const {
+//     return a<b;
+// }
 
 #endif //STUDYDATASTRUCT_BINARYHEAP_H
