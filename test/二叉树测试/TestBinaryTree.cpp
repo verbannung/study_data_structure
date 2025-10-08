@@ -97,3 +97,46 @@ TEST_F(TestBinaryTree, testClone) {
     EXPECT_EQ(clone_linked_binary_tree->depth(), 0);
 }
 
+TEST_F(TestBinaryTree, testIterator) {
+    auto iterator = tree->iterator();
+    EXPECT_EQ(iterator->next(), 4);
+    EXPECT_EQ(iterator->next(), 2);
+    EXPECT_EQ(iterator->next(), 5);
+    EXPECT_EQ(iterator->next(), 1);
+    EXPECT_EQ(iterator->next(), 3);
+    EXPECT_EQ(iterator->next(), 6);
+    EXPECT_FALSE(iterator->hasNext());
+    EXPECT_ANY_THROW(iterator->next());
+
+    auto iterator2 = tree->iterator(TraversalOrder::LevelOrder);
+    EXPECT_EQ(iterator2->next(), 1);
+    EXPECT_EQ(iterator2->next(), 2);
+    EXPECT_EQ(iterator2->next(), 3);
+    EXPECT_EQ(iterator2->next(), 4);
+    EXPECT_EQ(iterator2->next(), 5);
+    EXPECT_EQ(iterator2->next(), 6);
+    EXPECT_FALSE(iterator2->hasNext());
+    EXPECT_ANY_THROW(iterator2->next());
+
+    auto iterator3 = tree->iterator(TraversalOrder::PostOrder);
+    EXPECT_EQ(iterator3->next(), 4);
+    EXPECT_EQ(iterator3->next(), 5);
+    EXPECT_EQ(iterator3->next(), 2);
+    EXPECT_EQ(iterator3->next(), 6);
+    EXPECT_EQ(iterator3->next(), 3);
+    EXPECT_EQ(iterator3->next(), 1);
+    EXPECT_FALSE(iterator3->hasNext());
+    EXPECT_ANY_THROW(iterator3->next());
+
+    auto iterator4 = tree->iterator(TraversalOrder::PreOrder);
+    EXPECT_EQ(iterator4->next(), 1);
+    EXPECT_EQ(iterator4->next(), 2);
+    EXPECT_EQ(iterator4->next(), 4);
+    EXPECT_EQ(iterator4->next(), 5);
+    EXPECT_EQ(iterator4->next(), 3);
+    EXPECT_EQ(iterator4->next(), 6);
+    EXPECT_FALSE(iterator4->hasNext());
+    EXPECT_ANY_THROW(iterator4->next());
+}
+
+

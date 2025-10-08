@@ -64,8 +64,13 @@ public:
         return std::make_unique<LinkedBinaryTree<T>>(root?root->clone():nullptr);
     }
 
-    std::unique_ptr<TreeIterator<T>> iterator( TraversalOrder order=TraversalOrder::InOrder) const override {
+    std::unique_ptr<TreeIterator<T>> iterator( TraversalOrder order) const override {
         return std::make_unique<Iterator>(this, order);
+    }
+
+    //默认是Inorder遍历
+    std::unique_ptr<TreeIterator<T>> iterator() const  {
+        return std::make_unique<Iterator>(this, TraversalOrder::InOrder);
     }
 
 private:

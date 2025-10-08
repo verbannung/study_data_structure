@@ -5,6 +5,7 @@
 
 #include "gtest/gtest.h"
 #include "BinaryHeap.h"
+#include "LinkedBinaryTree.h"
 
 template<class T>
 class CustomComparator {
@@ -74,6 +75,29 @@ TEST_F(TestBinaryHeap, testCustomComparator) {
     EXPECT_EQ(customHeap.depth(),3);
     EXPECT_EQ(customHeap.top(),10);
 }
+
+TEST_F(TestBinaryHeap, testIteratorConstructor) {
+    auto root = std::make_unique<BinaryTreeNode<int>>(1);
+
+    root->setLeft(std::make_unique<BinaryTreeNode<int>>(2));
+    root->setRight(std::make_unique<BinaryTreeNode<int>>(3));
+
+    root->getLeft()->setLeft(std::make_unique<BinaryTreeNode<int>>(4));
+    root->getLeft()->setRight(std::make_unique<BinaryTreeNode<int>>(5));
+    root->getRight()->setRight(std::make_unique<BinaryTreeNode<int>>(6));
+
+    auto tree = std::make_unique<LinkedBinaryTree<int>>(std::move(root));
+
+    auto heap = MaxBinaryHeap<int>(*tree->iterator());
+
+    EXPECT_EQ(heap.size(),6);
+    EXPECT_EQ(heap.depth(),3);
+    EXPECT_EQ(heap.top(),6);
+    heap.pop();
+    EXPECT_EQ(heap.top(),5);
+}
+
+
 
 
 

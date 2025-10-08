@@ -25,7 +25,7 @@ protected:
 public:
     explicit BinaryHeap(Compare compare_=Compare{});
 
-    explicit BinaryHeap(Compare compare_=Compare{},auto begin,auto end);
+    explicit BinaryHeap(TreeIterator<T>& iterator_,Compare compare_=Compare{});
 
     [[nodiscard]] bool empty() const override;
 
@@ -85,6 +85,13 @@ void BinaryHeap<T,Compare>::heapifyDown(std::size_t index) {
 
 template<class T, class Compare>
 BinaryHeap<T, Compare>::BinaryHeap(Compare compare_) :compare(compare_){}
+
+template<class T, class Compare>
+BinaryHeap<T, Compare>::BinaryHeap( TreeIterator<T>& iterator_,Compare compare_):compare(compare_) {
+    while (iterator_.hasNext()) {
+        this->BinaryHeap<T, Compare>::push(iterator_.next());
+    }
+}
 
 
 
